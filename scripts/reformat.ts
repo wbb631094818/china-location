@@ -6,7 +6,7 @@ const fs = require('fs');
 let listPath = process.argv[2];
 if (!listPath) {
   throw new Error(
-    'No data list json file provided!use [npm run reformat -- /path/to/location.json] to specify original location data'
+    'No data list json file provided!use [npm run reformat -- /path/to/location.json] to specify original location data',
   );
 }
 
@@ -29,18 +29,18 @@ function processLocation() {
 }
 
 function getProvince() {
-  const result = {};
+  const result = [];
   const provinceKeys = allKeys.filter(key => {
     return key.endsWith('0000');
   });
   // console.log('=======Province=======');
   provinceKeys.forEach(pk => {
     // console.log(`${pk}:${list[pk]}`);
-    result[pk] = {
+    result.push({
       code: pk,
-      name: list[pk],
-      cities: getCities(pk),
-    };
+      label: list[pk],
+      list: getCities(pk),
+    });
     // const tempCities = getCities(pk);
   });
   // console.log(result);
@@ -58,7 +58,7 @@ function getProvince() {
 }
 
 function getCities(provinceCode) {
-  const result = {};
+  const result = [];
   const justProvince = provinceCode.substring(0, 2);
   const cities = allKeys.filter((pk, index) => {
     if (pk.startsWith(justProvince)) {
@@ -81,11 +81,11 @@ function getCities(provinceCode) {
   // console.log(`=======Cities for: ${provinceCode}=======`);
   cities.forEach(ck => {
     // console.log(`${ck}:${list[ck]}`);
-    result[ck] = {
+    result.push({
       code: ck,
-      name: list[ck],
-      districts: getDistricts(ck),
-    };
+      label: list[ck],
+      list: getDistricts(ck),
+    });
   });
   // console.log(result);
   // console.log(`=======Cities END, total: ${cities.length}=======`);
@@ -95,7 +95,7 @@ function getCities(provinceCode) {
 }
 
 function getDistricts(cityCode) {
-  const result = {};
+  const result = [];
   const justProvince = cityCode.substring(0, 2);
   const justCity = cityCode.substring(0, 4);
   const districts = allKeys.filter((pk, index) => {
@@ -115,7 +115,11 @@ function getDistricts(cityCode) {
   // console.log(`=======Districts for: ${cityCode}=======`);
   districts.forEach(ck => {
     // console.log(`${ck}:${list[ck]}`);
-    result[ck] = list[ck];
+    let ss = {
+      code: ck,
+      label: list[ck],
+    };
+    result.push(ss);
   });
   // console.log(result);
   // console.log(`=======Districts END, total: ${districts.length}=======`);
